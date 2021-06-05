@@ -84,7 +84,7 @@ namespace AlphaZombie
         //Turns Player.UnitName into a CASSIE-readable string
         public static string UnitToCassie(string unit) => $"nato_{unit[0]} {unit.Substring(unit.Length - 2)}";
 
-        //Self explanatory
+        //Self explanatory, for code readability
         public static bool IsAlphaZombie(Player player) => player.SessionVariables.ContainsKey("IsAlphaZombie");
     }
 }

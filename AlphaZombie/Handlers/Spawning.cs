@@ -36,7 +36,7 @@ namespace AlphaZombie.Handlers
                         if (tries++ > 5) { return; } //Five loops is chosen aribtrarily, perhaps I was thinking about five a lot when I wrote this code
                     }
 
-                    //Players are spawned one-by-one, so this prevents players from being set to Alpha Zombie then back to a normal class
+                    //Players are spawned one-by-one, so CallDelayed() prevents players from being set to Alpha Zombie then back to a normal class
                     Timing.CallDelayed(1f, () =>
                     {
                         Functions.SpawnAlphaZombie(newAlphaZombie);
