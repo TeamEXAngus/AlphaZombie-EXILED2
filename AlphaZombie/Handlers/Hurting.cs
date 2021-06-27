@@ -14,7 +14,7 @@ namespace AlphaZombie.Handlers
             }
 
             //Alpha Zombie Damage Handlers
-            if (Functions.IsAlphaZombie(ev.Target))
+            else if (Functions.IsAlphaZombie(ev.Target))
             {
                 AlphaZombieDamageHandlers(ev);
             }

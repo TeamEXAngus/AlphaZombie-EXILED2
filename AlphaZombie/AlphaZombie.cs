@@ -18,8 +18,6 @@ namespace AlphaZombie
         private Handlers.Hurting hurting;
         private Handlers.Spawning spawning;
 
-        public Random random = new Random();
-
         private AlphaZombie()
         {
         }

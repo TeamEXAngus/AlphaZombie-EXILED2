@@ -45,44 +45,44 @@ namespace AlphaZombie
             {
                 if (killer.Team == Team.MTF)
                 {
-                    Announce($"{name} succesfully terminated . Termination unit {UnitToCassie(killer.UnitName)}");
+                    AnnounceUsingCassie($"{name} succesfully terminated . Termination unit {UnitNameToCassieWords(killer.UnitName)}");
                     return;
                 }
 
-                Announce($"{name} succesfully terminated by {killer.Role}");
+                AnnounceUsingCassie($"{name} succesfully terminated by {killer.Role}");
                 return;
             }
 
             //Can't use switch statement; 'DamageTypes' are not constant values
             if (damageType == DamageTypes.Decont)
             {
-                Announce($"{name} lost in decontamination sequence");
+                AnnounceUsingCassie($"{name} lost in decontamination sequence");
                 return;
             }
 
             if (damageType == DamageTypes.Tesla)
             {
-                Announce($"{name} succesfully terminated by automatic security system");
+                AnnounceUsingCassie($"{name} succesfully terminated by automatic security system");
                 return;
             }
 
             if (damageType == DamageTypes.Nuke)
             {
-                Announce($"{name} terminated by alpha warhead");
+                AnnounceUsingCassie($"{name} terminated by alpha warhead");
                 return;
             }
 
-            Announce($"{name} terminated . termination cause unspecified");
+            AnnounceUsingCassie($"{name} terminated . termination cause unspecified");
         }
 
         //Sends a CASSIE announcement with the configured glitch chance
-        public static void Announce(string message)
+        public static void AnnounceUsingCassie(string message)
         {
             Cassie.GlitchyMessage(message, AlphaZombie.Instance.Config.DeathAnnounceGlitchChance, AlphaZombie.Instance.Config.DeathAnnounceGlitchChance);
         }
 
         //Turns Player.UnitName into a CASSIE-readable string
-        public static string UnitToCassie(string unit) => $"nato_{unit[0]} {unit.Substring(unit.Length - 2)}";
+        public static string UnitNameToCassieWords(string unit) => $"nato_{unit[0]} {unit.Substring(unit.Length - 2)}";
 
         //Self explanatory, for code readability
         public static bool IsAlphaZombie(Player player) => player.SessionVariables.ContainsKey("IsAlphaZombie");
