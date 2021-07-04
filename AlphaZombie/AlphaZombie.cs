@@ -7,11 +7,11 @@ namespace AlphaZombie
 {
     public class AlphaZombie : Plugin<Config>
     {
-        public static AlphaZombie Instance;
+        public static AlphaZombie Instance { get; } = new AlphaZombie();
         public override PluginPriority Priority { get; } = PluginPriority.Medium;
 
         public override Version RequiredExiledVersion { get; } = new Version(2, 10, 0);
-        public override Version Version { get; } = new Version(1, 0, 1);
+        public override Version Version { get; } = new Version(1, 0, 2);
 
         private Handlers.Dying dying;
         private Handlers.Hurting hurting;
@@ -24,7 +24,6 @@ namespace AlphaZombie
         //Run startup code when plugin is enabled
         public override void OnEnabled()
         {
-            Instance = this;
             RegisterEvents();
         }
 
