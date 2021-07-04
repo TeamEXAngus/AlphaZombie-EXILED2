@@ -7,8 +7,7 @@ namespace AlphaZombie
 {
     public class AlphaZombie : Plugin<Config>
     {
-        private static AlphaZombie singleton = new AlphaZombie();
-        public static AlphaZombie Instance => singleton;
+        public static AlphaZombie Instance;
         public override PluginPriority Priority { get; } = PluginPriority.Medium;
 
         public override Version RequiredExiledVersion { get; } = new Version(2, 10, 0);
@@ -25,6 +24,7 @@ namespace AlphaZombie
         //Run startup code when plugin is enabled
         public override void OnEnabled()
         {
+            Instance = this;
             RegisterEvents();
         }
 
