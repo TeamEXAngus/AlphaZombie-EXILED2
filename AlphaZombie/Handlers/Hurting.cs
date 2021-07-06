@@ -8,13 +8,13 @@ namespace AlphaZombie.Handlers
         public void OnHurting(HurtingEventArgs ev)
         {
             //Inflicts status effects and damage, and sends broadcast, when player is hit by Alpha Zombie
-            if (ev.Target != ev.Attacker && Functions.IsAlphaZombie(ev.Attacker))
+            if (ev.Target != ev.Attacker && ev.Attacker.IsAlphaZombie())
             {
                 HitByAlphaZombie(ev);
             }
 
             //Alpha Zombie Damage Handlers
-            else if (Functions.IsAlphaZombie(ev.Target))
+            else if (ev.Target.IsAlphaZombie())
             {
                 AlphaZombieDamageHandlers(ev);
             }

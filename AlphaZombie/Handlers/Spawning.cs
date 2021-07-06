@@ -11,9 +11,9 @@ namespace AlphaZombie.Handlers
         public void OnSpawning(SpawningEventArgs ev)
         {
             //Destroys Alpha Zombie if they change class
-            if (Functions.IsAlphaZombie(ev.Player) && ev.Player.Role != RoleType.Scp0492)
+            if (ev.Player.IsAlphaZombie() && ev.Player.Role != RoleType.Scp0492)
             {
-                Functions.DestroyAlphaZombie(ev.Player);
+                ev.Player.DestroyAlphaZombie();
             }
 
             bool ShouldTrySpawnAZ = ev.Player.Role == RoleType.Scp049 &&
@@ -58,7 +58,7 @@ namespace AlphaZombie.Handlers
             }
 
             //Players are spawned one-by-one, so CallDelayed() prevents players from being set to Alpha Zombie then back to a normal class
-            Timing.CallDelayed(1f, () => Functions.SpawnAlphaZombie(newAlphaZombie));
+            Timing.CallDelayed(1f, () => newAlphaZombie.SpawnAlphaZombie());
 
             Success = true;
             return;

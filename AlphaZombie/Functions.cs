@@ -4,10 +4,10 @@ using MEC;
 
 namespace AlphaZombie
 {
-    internal class Functions
+    internal static class Functions
     {
         //Turns a player into an Alpha Zombie
-        public static void SpawnAlphaZombie(Player player)
+        public static void SpawnAlphaZombie(this Player player)
         {
             player.Position = Exiled.API.Extensions.Role.GetRandomSpawnPoint(RoleType.Scp049);
             player.SetRole(RoleType.Scp0492, true); player.Items.Clear(); //Must clear items because in this case, SetRole doesn't remove them
@@ -27,7 +27,7 @@ namespace AlphaZombie
         }
 
         //Stops a player from being an Alpha Zombie
-        public static void DestroyAlphaZombie(Player player)
+        public static void DestroyAlphaZombie(this Player player)
         {
             player.SessionVariables.Remove("IsAlphaZombie");
             player.Scale = new UnityEngine.Vector3(1, 1, 1);
@@ -82,9 +82,9 @@ namespace AlphaZombie
         }
 
         //Turns Player.UnitName into a CASSIE-readable string
-        public static string UnitNameToCassieWords(string unit) => $"nato_{unit[0]} {unit.Substring(unit.Length - 2)}";
+        public static string UnitNameToCassieWords(this string unit) => $"nato_{unit[0]} {unit.Substring(unit.Length - 2)}";
 
         //Self explanatory, for code readability
-        public static bool IsAlphaZombie(Player player) => player.SessionVariables.ContainsKey("IsAlphaZombie");
+        public static bool IsAlphaZombie(this Player player) => player.SessionVariables.ContainsKey("IsAlphaZombie");
     }
 }

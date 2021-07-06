@@ -40,7 +40,7 @@ namespace AlphaZombie.Commands
                 return false;
             }
 
-            Functions.SpawnAlphaZombie(TargetPlayer);
+            TargetPlayer.SpawnAlphaZombie();
 
             response = $"Succesfully spawned {TargetPlayer.Nickname} as Alpha Zombie!";
             return true;
