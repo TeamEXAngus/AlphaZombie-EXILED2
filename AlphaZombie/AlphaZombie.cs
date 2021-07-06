@@ -18,23 +18,9 @@ namespace AlphaZombie
         private Handlers.Spawning spawning;
 
         private AlphaZombie()
-        {
-        }
+        { }
 
-        //Run startup code when plugin is enabled
         public override void OnEnabled()
-        {
-            RegisterEvents();
-        }
-
-        //Run shutdown code when plugin is disabled
-        public override void OnDisabled()
-        {
-            UnregisterEvents();
-        }
-
-        //Plugin startup code
-        public void RegisterEvents()
         {
             dying = new Handlers.Dying();
             hurting = new Handlers.Hurting();
@@ -45,8 +31,7 @@ namespace AlphaZombie
             PlayerHandler.Spawning += spawning.OnSpawning;
         }
 
-        //Plugin shutdown code
-        public void UnregisterEvents()
+        public override void OnDisabled()
         {
             PlayerHandler.Hurting -= hurting.OnHurting;
             PlayerHandler.Dying -= dying.OnDying;

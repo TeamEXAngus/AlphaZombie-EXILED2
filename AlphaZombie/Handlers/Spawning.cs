@@ -3,6 +3,7 @@ using Exiled.API.Features;
 using MEC;
 using NorthwoodLib.Pools;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace AlphaZombie.Handlers
 {
@@ -34,27 +35,19 @@ namespace AlphaZombie.Handlers
             bool enoughPlayers = playerCount >= AlphaZombie.Instance.Config.MinPlayersForSpawn;
             bool percentChance = Random.Range(0, 100 + 1) <= AlphaZombie.Instance.Config.AlphaZombieSpawnChance;
             bool canSpawn = enoughPlayers && percentChance;
+
             if (!canSpawn)
             {
                 Success = false;
                 return;
             }
 
-            Player newAlphaZombie = playerList[RandomIntInRange(0, playerCount)];
-            int tries = 0;
+            Player newAlphaZombie = TryChoosePlayer(out bool SuccessfullyChosePlayer, playerList, playerCount);
 
-            //Over-engineered code segment prevents Alpha Zombie from replacing the SCP-049 that spawned it
-            while (newAlphaZombie.Role == RoleType.Scp049)
+            if (!SuccessfullyChosePlayer)
             {
-                newAlphaZombie = playerList[RandomIntInRange(0, playerCount)];
-
-                //Will prevent the server from hanging in the event that only SCP-049s exist
-                //Five loops is chosen aribtrarily, perhaps I was thinking about five a lot when I wrote this code
-                if (tries++ > 5)
-                {
-                    Success = false;
-                    return;
-                }
+                Success = false;
+                return;
             }
 
             //Players are spawned one-by-one, so CallDelayed() prevents players from being set to Alpha Zombie then back to a normal class
@@ -62,6 +55,29 @@ namespace AlphaZombie.Handlers
 
             Success = true;
             return;
+        }
+
+        private Player TryChoosePlayer(out bool Success, List<Player> playerList, int playerCount)
+        {
+            Player ChosenPlayer = playerList[RandomIntInRange(0, playerCount)];
+            int tries = 0;
+
+            //Over-engineered code segment prevents Alpha Zombie from replacing the SCP-049 that spawned it
+            while (ChosenPlayer.Role == RoleType.Scp049)
+            {
+                ChosenPlayer = playerList[RandomIntInRange(0, playerCount)];
+
+                //Will prevent the server from hanging in the event that only SCP-049s exist
+                //Five loops is chosen aribtrarily, perhaps I was thinking about five a lot when I wrote this code
+                if (tries++ > 5)
+                {
+                    Success = false;
+                    return null;
+                }
+            }
+
+            Success = true;
+            return ChosenPlayer;
         }
 
         private int RandomIntInRange(int min, int max) => Random.Range(min, max + 1); //Unity random has an exclusive max argument
