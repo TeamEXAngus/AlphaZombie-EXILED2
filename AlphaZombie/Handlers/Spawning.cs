@@ -2,6 +2,7 @@
 using Exiled.API.Features;
 using MEC;
 using NorthwoodLib.Pools;
+using System.Linq;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -11,38 +12,46 @@ namespace AlphaZombie.Handlers
     {
         public void OnSpawning(SpawningEventArgs ev)
         {
+            DestroyAZIfClassChanged(ev);
+            TrySpawnAZIf049Spawned(ev);
+        }
+
+        private void DestroyAZIfClassChanged(SpawningEventArgs ev)
+        {
             //Destroys Alpha Zombie if they change class
             if (ev.Player.IsAlphaZombie() && ev.Player.Role != RoleType.Scp0492)
             {
                 ev.Player.DestroyAlphaZombie();
             }
+        }
 
+        private void TrySpawnAZIf049Spawned(SpawningEventArgs ev)
+        {
             bool ShouldTrySpawnAZ = ev.Player.Role == RoleType.Scp049 &&
                                     Round.ElapsedTime.TotalSeconds <= 5; //Five seconds chosen arbitrarily
             if (ShouldTrySpawnAZ)
             {
                 SpawningAZ(out bool SpawnSuccess);
-                Log.Debug("Failed to spawn Alpha Zombie.", !(SpawnSuccess) && AlphaZombie.Instance.Config.DebugMessages);
+                Log.Debug("Failed to spawn Alpha Zombie.", !SpawnSuccess && AlphaZombie.Instance.Config.DebugMessages);
             }
         }
 
         //Boolean return value states whether a player was spawned or not.
         private void SpawningAZ(out bool Success)
         {
-            var playerList = ListPool<Player>.Shared.Rent(Player.List); //Definitely not ripped from Stalky106
-            int playerCount = playerList.Count;
+            var PlayerList = ListPool<Player>.Shared.Rent(Player.List); //Definitely not ripped from Stalky106
 
-            bool enoughPlayers = playerCount >= AlphaZombie.Instance.Config.MinPlayersForSpawn;
-            bool percentChance = Random.Range(0, 100 + 1) <= AlphaZombie.Instance.Config.AlphaZombieSpawnChance;
-            bool canSpawn = enoughPlayers && percentChance;
+            bool EnoughPlayers = PlayerList.Count >= AlphaZombie.Instance.Config.MinPlayersForSpawn;
+            bool PercentChance = RandomIntInRange(0, 100) <= AlphaZombie.Instance.Config.AlphaZombieSpawnChance;
+            bool CanSpawn = EnoughPlayers && PercentChance;
 
-            if (!canSpawn)
+            if (!CanSpawn)
             {
                 Success = false;
                 return;
             }
 
-            Player newAlphaZombie = TryChoosePlayer(out bool SuccessfullyChosePlayer, playerList, playerCount);
+            Player NewAlphaZombie = TryChoosePlayer(out bool SuccessfullyChosePlayer, PlayerList);
 
             if (!SuccessfullyChosePlayer)
             {
@@ -51,33 +60,25 @@ namespace AlphaZombie.Handlers
             }
 
             //Players are spawned one-by-one, so CallDelayed() prevents players from being set to Alpha Zombie then back to a normal class
-            Timing.CallDelayed(1f, () => newAlphaZombie.SpawnAlphaZombie());
+            Timing.CallDelayed(1f, () => NewAlphaZombie.SpawnAlphaZombie());
 
             Success = true;
             return;
         }
 
-        private Player TryChoosePlayer(out bool Success, List<Player> playerList, int playerCount)
+        private Player TryChoosePlayer(out bool Success, List<Player> playerList)
         {
-            Player ChosenPlayer = playerList[RandomIntInRange(0, playerCount)];
-            int tries = 0;
+            var ListOfPlayersNot049 = playerList.Where(Ply => Ply.Role != RoleType.Scp049).ToList();
+            var ListCount = ListOfPlayersNot049.Count;
 
-            //Over-engineered code segment prevents Alpha Zombie from replacing the SCP-049 that spawned it
-            while (ChosenPlayer.Role == RoleType.Scp049)
+            if (ListCount == 0)
             {
-                ChosenPlayer = playerList[RandomIntInRange(0, playerCount)];
-
-                //Will prevent the server from hanging in the event that only SCP-049s exist
-                //Five loops is chosen aribtrarily, perhaps I was thinking about five a lot when I wrote this code
-                if (tries++ > 5)
-                {
-                    Success = false;
-                    return null;
-                }
+                Success = false;
+                return null;
             }
 
             Success = true;
-            return ChosenPlayer;
+            return ListOfPlayersNot049[RandomIntInRange(0, ListCount)];
         }
 
         private int RandomIntInRange(int min, int max) => Random.Range(min, max + 1); //Unity random has an exclusive max argument

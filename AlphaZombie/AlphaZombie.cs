@@ -7,7 +7,9 @@ namespace AlphaZombie
 {
     public class AlphaZombie : Plugin<Config>
     {
-        public static AlphaZombie Instance { get; } = new AlphaZombie();
+        private static readonly AlphaZombie singleton = new AlphaZombie();
+        public static AlphaZombie Instance => singleton;
+
         public override PluginPriority Priority { get; } = PluginPriority.Medium;
 
         public override Version RequiredExiledVersion { get; } = new Version(2, 10, 0);
