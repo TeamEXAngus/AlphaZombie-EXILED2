@@ -12,34 +12,34 @@ namespace AlphaZombie.Handlers
     {
         public void OnSpawning(SpawningEventArgs ev)
         {
-            DestroyAZIfClassChanged(ev);
-            TrySpawnAZIf049Spawned(ev);
+            DestroyAZIfClassChanged(ev.Player);
+            TrySpawnAZIf049Spawned(ev.Player);
         }
 
-        private void DestroyAZIfClassChanged(SpawningEventArgs ev)
+        private void DestroyAZIfClassChanged(Player Player)
         {
             //Destroys Alpha Zombie if they change class
-            if (ev.Player.IsAlphaZombie() && ev.Player.Role != RoleType.Scp0492)
+            if (Player.IsAlphaZombie() && Player.Role != RoleType.Scp0492)
             {
-                ev.Player.DestroyAlphaZombie();
+                Player.DestroyAlphaZombie();
             }
         }
 
-        private void TrySpawnAZIf049Spawned(SpawningEventArgs ev)
+        private void TrySpawnAZIf049Spawned(Player Player)
         {
-            bool ShouldTrySpawnAZ = ev.Player.Role == RoleType.Scp049 &&
+            bool ShouldTrySpawnAZ = Player.Role == RoleType.Scp049 &&
                                     Round.ElapsedTime.TotalSeconds <= 5; //Five seconds chosen arbitrarily
             if (ShouldTrySpawnAZ)
             {
                 SpawningAZ(out bool SpawnSuccess);
-                Log.Debug("Failed to spawn Alpha Zombie.", !SpawnSuccess && AlphaZombie.Instance.Config.DebugMessages);
+                Log.Debug($"Failed to spawn Alpha Zombie.", !SpawnSuccess && AlphaZombie.Instance.Config.DebugMessages);
             }
         }
 
         //Boolean return value states whether a player was spawned or not.
         private void SpawningAZ(out bool Success)
         {
-            var PlayerList = ListPool<Player>.Shared.Rent(Player.List); //Definitely not ripped from Stalky106
+            var PlayerList = ListPool<Player>.Shared.Rent(Player.List);
 
             bool EnoughPlayers = PlayerList.Count >= AlphaZombie.Instance.Config.MinPlayersForSpawn;
             bool PercentChance = RandomIntInRange(0, 100) <= AlphaZombie.Instance.Config.AlphaZombieSpawnChance;
@@ -73,6 +73,8 @@ namespace AlphaZombie.Handlers
 
             if (ListCount == 0)
             {
+                Log.Debug("Failed to spawn Alpha Zombie because no players exist which are not SCP-049", AlphaZombie.Instance.Config.DebugMessages);
+
                 Success = false;
                 return null;
             }

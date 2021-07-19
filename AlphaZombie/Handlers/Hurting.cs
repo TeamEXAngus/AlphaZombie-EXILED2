@@ -24,15 +24,12 @@ namespace AlphaZombie.Handlers
         public void HitByAlphaZombie(HurtingEventArgs ev)
         {
             if (AlphaZombie.Instance.Config.BroadcastWhenHit != "none")
-            {
                 ev.Target.Broadcast(AlphaZombie.Instance.Config.BroadcastDuration, AlphaZombie.Instance.Config.BroadcastWhenHit);
-            }
 
             ev.Amount = AlphaZombie.Instance.Config.AlphaZombieAttackDamage;
+
             foreach (EffectType effect in AlphaZombie.Instance.Config.AlphaZombieInflict)
-            {
                 ev.Target.EnableEffect(effect);
-            }
         }
 
         //Called when Alpha Zombie takes damage, prevents coke damage and modifies decont damage
